@@ -41,8 +41,8 @@ decimal.addEventListener('click', () => {
 });
 
 zero.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber();
-  if (elementToFill.textContent.length == 1 && elementToFill.textContent[0] == '0') return
+  elementToFill = whereToPlaceNumber(); // If I add .textContent here it doesn't work. Not sure why
+  if (elementToFill.textContent.length === 1 && elementToFill.textContent[0] === '0') return;
 
   elementToFill.textContent += zero.dataset.value;
 });
