@@ -5,27 +5,3 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-#last {
-  background-color: blueviolet;
-  height: 100px;
-  width: 100px;
-}
-
-#firstNum {
-  background-color: burlywood;
-  height: 100px;
-  width: 100px;
-}
-
-#operation {
-  background-color: blueviolet;
-  height: 100px;
-  width: 100px;
-}
-
-#secondNum {
-  background-color: burlywood;
-  height: 100px;
-  width: 100px;
-}
