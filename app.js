@@ -29,7 +29,6 @@ function whereToPlaceNumber() {
 
 numberButtons.forEach(button => {
   button.addEventListener('click', () => {
-    console.log(button.dataset.value)
     whereToPlaceNumber().textContent += button.dataset.value;
   })
 });
