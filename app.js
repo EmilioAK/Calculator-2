@@ -4,6 +4,7 @@ const decimal = document.getElementById('decimal');
 const equals = document.getElementById('equals');
 const backspace = document.getElementById('backspace');
 const clear = document.getElementById('clear');
+const zero = document.getElementById('zero');
 
 const firstNum = document.getElementById('firstNum');
 const operation = document.getElementById('operation');
@@ -37,6 +38,13 @@ decimal.addEventListener('click', () => {
   elementToFill = whereToPlaceNumber();
   if (elementToFill.childNodes.length != 0 && !elementToFill.textContent.includes('.')) {
     elementToFill.textContent += decimal.dataset.value;
+  }
+});
+
+zero.addEventListener('click', () => {
+  elementToFill = whereToPlaceNumber();
+  if (elementToFill.childNodes.length != 0) {
+    elementToFill.textContent += zero.dataset.value;
   }
 });
 
