@@ -29,22 +29,33 @@ function whereToPlaceNumber() {
 
 numberButtons.forEach(button => {
   button.addEventListener('click', () => {
-    whereToPlaceNumber().textContent += button.dataset.value;
+    elementToFill = whereToPlaceNumber();
+    if (elementToFill.textContent === '0') {
+      elementToFill.textContent = button.dataset.value;
+    } else {
+      whereToPlaceNumber().textContent += button.dataset.value;
+    }
   })
 });
 
 decimal.addEventListener('click', () => {
   elementToFill = whereToPlaceNumber();
-  if (elementToFill.childNodes.length != 0 && !elementToFill.textContent.includes('.')) {
-    elementToFill.textContent += decimal.dataset.value;
+  if (!elementToFill.textContent.includes('.')) {
+    if (elementToFill.childNodes.length === 0) {
+      elementToFill.textContent = '0.';
+    } else {
+      elementToFill.textContent += decimal.dataset.value;
+    }
   }
 });
 
 zero.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber(); // If I add .textContent here it doesn't work. Not sure why
-  if (elementToFill.textContent.length === 1 && elementToFill.textContent[0] === '0') return;
-
-  elementToFill.textContent += zero.dataset.value;
+  elementToFill = whereToPlaceNumber();
+  if (elementToFill.textContent.length === 0 || elementToFill.textContent === '0') {
+    elementToFill.textContent = '0.';
+  } else {
+    elementToFill.textContent += zero.dataset.value;
+  }
 });
 
 operationButtons.forEach(button => {
