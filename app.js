@@ -17,7 +17,7 @@ function operate(operation, n1, n2) {
     "*": (a, b) => a*b,
     "/": (a, b) => a/b
   };
-  return operations[operation](n1, n2);
+  return operations[operation](parseInt(n1), parseInt(n2));
 }
 
 function whereToPlaceNumber() {
