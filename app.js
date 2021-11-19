@@ -28,14 +28,15 @@ function whereToPlaceNumber() {
 
 numberButtons.forEach(button => {
   button.addEventListener('click', () => {
-    whereToPlaceNumber().textContent += button.value;
+    console.log(button.dataset.value)
+    whereToPlaceNumber().textContent += button.dataset.value;
   })
 });
 
 decimal.addEventListener('click', () => {
   elementToFill = whereToPlaceNumber();
   if (elementToFill.childNodes.length != 0 && !elementToFill.textContent.includes('.')) {
-    elementToFill.textContent += decimal.value;
+    elementToFill.textContent += decimal.dataset.value;
   }
 });
 
@@ -47,7 +48,7 @@ operationButtons.forEach(button => {
       firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
       secondNum.textContent = '';
     }
-    operation.textContent = button.value;
+    operation.textContent = button.dataset.value;
   });
 });
 

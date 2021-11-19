@@ -9,36 +9,33 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="calculator">
-    <div class="output">
-      <h1><span id="firstNum"></span> <span id="operation"></span> <span id="secondNum"></span></h1>
-    </div>
-    <div id="numberButtons">
-      <input type="button" class="numberButton" value="1">
-      <input type="button" class="numberButton" value="2">
-      <input type="button" class="numberButton" value="3">
-      <input type="button" class="numberButton" value="4">
-      <input type="button" class="numberButton" value="5">
-      <input type="button" class="numberButton" value="6">
-      <input type="button" class="numberButton" value="7">
-      <input type="button" class="numberButton" value="8">
-      <input type="button" class="numberButton" value="9">
-      <input type="button" class="numberButton" value="0">
-      <input type="button" id="decimal" value=".">
-    </div>
-    <div class="operations">
-      <input type="button" value="+" class="operationButton">
-      <input type="button" value="-" class="operationButton">
-      <input type="button" value="*" class="operationButton">
-      <input type="button" value="/" class="operationButton">
-    </div>
-    <div class="calculate">
-      <input type="button" value="=" id="equals">
-    </div>
-    <div class="clear">
-      <input type="button" value="CE" id="clear">
-      <input type="button" value="<-" id="backspace">
-    </div>
+  <div id="calculator" class="calculator">
+    <div class="result"><p><span id="firstNum"></span> <span id="operation"></span> <span id="secondNum"></span></p></div>
+    
+    <span class="clear grey" id="clear">AC</span>
+    <span class="grey"> </span>
+    <span class="grey" value='<-' id="backspace">&lt;-</span>
+    <span class="operator operationButton" data-value='/'>÷</span>
+  
+    <span class="numberButton" data-value="7">7</span>
+    <span class="numberButton" data-value="8">8</span>
+    <span class="numberButton" data-value="9">9</span>
+    <span class="operator operationButton" data-value='*'>x</span>
+    
+    <span class="numberButton" data-value="4">4</span>
+    <span class="numberButton" data-value="5">5</span>
+    <span class="numberButton" data-value="6">6</span>
+    <span class="operator operationButton" data-value='-'>-</span>
+    
+    <span class="numberButton" data-value="1">1</span>
+    <span class="numberButton" data-value="2">2</span>
+    <span class="numberButton" data-value="3">3</span>
+    <span class="operator operationButton" data-value='+'>+</span>
+    
+    <span class="double numberButton" data-value="0" id="zero">0</span>
+    <span id="decimal" data-value='.'>.</span>
+    <span class="operator" id="equals">=</span>
+    
   </div>
 </body>
 </html>
