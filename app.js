@@ -42,9 +42,9 @@ decimal.addEventListener('click', () => {
 
 zero.addEventListener('click', () => {
   elementToFill = whereToPlaceNumber();
-  if (elementToFill.textContent.slice(-1) != '0') {
-    elementToFill.textContent += zero.dataset.value;
-  }
+  if (elementToFill.textContent.length == 1 && elementToFill.textContent[0] == '0') return
+
+  elementToFill.textContent += zero.dataset.value;
 });
 
 operationButtons.forEach(button => {
