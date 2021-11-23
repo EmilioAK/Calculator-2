@@ -1,5 +1,5 @@
-const operationButtons = Array.from(document.getElementsByClassName('operationButton'));
-const numberButtons = Array.from(document.getElementsByClassName('numberButton'));
+const operationButtons = document.getElementsByClassName('operationButton');
+const numberButtons = document.getElementsByClassName('numberButton');
 const decimal = document.getElementById('decimal');
 const equals = document.getElementById('equals');
 const backspace = document.getElementById('backspace');
@@ -27,7 +27,7 @@ function whereToPlaceNumber() {
   return secondNum;
 }
 
-numberButtons.forEach(button => {
+for (const button of numberButtons) {
   button.addEventListener('click', () => {
     elementToFill = whereToPlaceNumber();
     if (elementToFill.textContent === '0') {
@@ -36,7 +36,19 @@ numberButtons.forEach(button => {
       whereToPlaceNumber().textContent += button.dataset.value;
     }
   })
-});
+}
+
+for (const button of operationButtons) {
+  button.addEventListener('click', () => {
+    if (firstNum.childNodes.length === 0) return;
+
+    if (secondNum.childNodes.length != 0) {
+      firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
+      secondNum.textContent = '';
+    }
+    operation.textContent = button.dataset.value;
+  });
+}
 
 decimal.addEventListener('click', () => {
   elementToFill = whereToPlaceNumber();
@@ -56,18 +68,6 @@ zero.addEventListener('click', () => {
   } else {
     elementToFill.textContent += zero.dataset.value;
   }
-});
-
-operationButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    if (firstNum.childNodes.length === 0) return;
-
-    if (secondNum.childNodes.length != 0) {
-      firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
-      secondNum.textContent = '';
-    }
-    operation.textContent = button.dataset.value;
-  });
 });
 
 equals.addEventListener('click', () => {
