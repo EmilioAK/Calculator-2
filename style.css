@@ -45,10 +45,10 @@ span {
   text-align: center;
   cursor: pointer;
   width: 25%;
-  /* background-color: #ccc; */
   line-height: 2em;
   border-top: 0.01em solid black;
   border-left: 0.01em solid black;
+  word-wrap: break-word;
 }
 .operator {
   background-color: #FF9500;
