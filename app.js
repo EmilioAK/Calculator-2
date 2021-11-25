@@ -32,77 +32,87 @@ function render() {
   operation.textContent = state.operation;
   secondNum.textContent = state.secondNum;
 }
+render();
 
 function whereToPlaceNumber() {
-  if (operation.childNodes.length === 0) {
-    return firstNum;
+  if (state.operation.length === 0) {
+    return 'firstNum';
   }
-  return secondNum;
+  return 'secondNum';
 }
 
 for (const button of numberButtons) {
   button.addEventListener('click', () => {
-    elementToFill = whereToPlaceNumber();
-    if (elementToFill.textContent === '0') {
-      elementToFill.textContent = button.dataset.value;
+    const activeElement = whereToPlaceNumber();
+    if (state[activeElement] === '0') {
+      state[activeElement] = button.dataset.value;
     } else {
-      whereToPlaceNumber().textContent += button.dataset.value;
+      state[activeElement] += button.dataset.value;
     }
-  })
+    render();
+  });
 }
 
 for (const button of operationButtons) {
   button.addEventListener('click', () => {
-    if (firstNum.childNodes.length === 0) return;
+    if (state.firstNum.length === 0) return;
 
-    if (secondNum.childNodes.length != 0) {
-      firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
-      secondNum.textContent = '';
+    if (state.secondNum.length != 0) {
+      state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
+      state.secondNum = '';
     }
-    operation.textContent = button.dataset.value;
+    state.operation = button.dataset.value;
+    render();
   });
 }
 
 decimal.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber();
-  if (!elementToFill.textContent.includes('.')) {
-    if (elementToFill.childNodes.length === 0) {
-      elementToFill.textContent = '0.';
+  const activeElement = whereToPlaceNumber();
+  if (!state[activeElement].includes('.')) {
+    if (state[activeElement].length === 0) {
+      state[activeElement] = '0.';
     } else {
-      elementToFill.textContent += decimal.dataset.value;
+      state[activeElement] += decimal.dataset.value;
     }
+    render();
   }
 });
 
 zero.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber();
-  if (elementToFill.textContent.length === 0 || elementToFill.textContent === '0') {
-    elementToFill.textContent = '0.';
+  const activeElement = whereToPlaceNumber();
+  if (state[activeElement].length === 0 || state[activeElement] === '0') {
+    state[activeElement] = '0.';
   } else {
-    elementToFill.textContent += zero.dataset.value;
+    state[activeElement] += zero.dataset.value;
   }
+  render();
 });
 
 equals.addEventListener('click', () => {
-  if (secondNum.childNodes.length != 0) {
-    firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
-    operation.textContent = '';
-    secondNum.textContent = '';
+  if (state.secondNum.length > 0) {
+    state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
+    state.operation = '';
+    state.secondNum = '';
   }
+  render();
 });
 
 backspace.addEventListener('click', () => {
-  if (secondNum.childNodes.length != 0) {
-    secondNum.textContent = secondNum.textContent.slice(0, -1);
-  } else if (operation.childNodes.length != 0) {
-    operation.textContent = '';
+  if (state.secondNum.length > 0) {
+    state.secondNum = state.secondNum.slice(0, -1);
+  } else if (state.operation.length != 0) {
+    state.operation = '';
   } else {
-    firstNum.textContent = firstNum.textContent.slice(0, -1);
+    state.firstNum = state.firstNum.slice(0, -1);
   }
+  render();
 });
 
 clear.addEventListener('click', () => {
-  firstNum.textContent = '';
-  operation.textContent = '';
-  secondNum.textContent = '';
+  state = {
+    "firstNum": '',
+    "operation": '',
+    "secondNum": '',
+  };
+  render();
 });
