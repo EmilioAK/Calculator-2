@@ -10,13 +10,14 @@ const firstNum = document.getElementById('firstNum');
 const operation = document.getElementById('operation');
 const secondNum = document.getElementById('secondNum');
 
+const operations = {
+  "+": (a, b) => a + b,
+  "-": (a, b) => a - b,
+  "*": (a, b) => a * b,
+  "/": (a, b) => a / b
+};
+
 function operate(operation, n1, n2) {
-  const operations = {
-    "+": (a, b) => a+b,
-    "-": (a, b) => a-b,
-    "*": (a, b) => a*b,
-    "/": (a, b) => a/b
-  };
   return operations[operation](parseFloat(n1), parseFloat(n2));
 }
 
