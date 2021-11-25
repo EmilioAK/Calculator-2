@@ -12,26 +12,42 @@ const operations = {
 
 const operate = (operation, n1, n2) => {
   return operations[operation](parseFloat(n1), parseFloat(n2));
-}
+};
 
+
+// The entire mutable state of the application is located here.
+// We change it using a pure reducer, and render the state to DOM.
+// There has been a simple modification of the state here: instead of expressing
+// the state as firstNumber/secondNumber, the state is expressed in terms of
+// stack machine with the depth of one. This way, `value` state key is always
+// the current element, which makes it easier to manipulate.
 let state = {
   value: '',
   operation: '',
   stack: '',
 };
+const dispatch = (event) => {
+  state = reduce(state, event);
+  render(state);
+};
+render(state);
 
-const render = () => {
+// Since we've separated the state from DOM, there's a need to update
+// the DOM according to the state.
+const render = (state) => {
+  // We render the state differently depending on presence of the operator.
   if (state.operation) {
+    // If it's present, it means we have two values to display
     firstNum.textContent = state.stack;
     operation.textContent = state.operation;
     secondNum.textContent = state.value;
   } else {
+    // ...and if not, only one.
     firstNum.textContent = state.value;
     operation.textContent = state.operation
     secondNum.textContent = '';
   }
 };
-render();
 
 calculator.addEventListener('click', (event) => {
   const target = event.target;
@@ -39,13 +55,10 @@ calculator.addEventListener('click', (event) => {
   if (!type || !value) {
     return;
   }
+  // We transform a DOM event to our custom "action", which has a form
+  // { type: 'string', value: 'string' }
   dispatch({ type, value });
 }, true);
-
-const dispatch = (event) => {
-  state = reduce(state, event);
-  render();
-};
 
 const appendDigit = (prefix, digit) => {
   if (prefix === '0') {
