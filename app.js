@@ -14,11 +14,23 @@ const operations = {
   "+": (a, b) => a + b,
   "-": (a, b) => a - b,
   "*": (a, b) => a * b,
-  "/": (a, b) => a / b
+  "/": (a, b) => a / b,
 };
 
 function operate(operation, n1, n2) {
   return operations[operation](parseFloat(n1), parseFloat(n2));
+}
+
+let state = {
+  "firstNum": '',
+  "operation": '',
+  "secondNum": '',
+};
+
+function render() {
+  firstNum.textContent = state.firstNum;
+  operation.textContent = state.operation;
+  secondNum.textContent = state.secondNum;
 }
 
 function whereToPlaceNumber() {
