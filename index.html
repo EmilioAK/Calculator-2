@@ -12,29 +12,29 @@
   <div id="calculator" class="calculator">
     <div class="result"><p><span id="firstNum"></span> <span id="operation"></span> <span id="secondNum"></span></p></div>
     
-    <span class="clear grey" id="clear">AC</span>
+    <span class="clear grey" data-type="fn" data-value="clear">AC</span>
     <span class="grey"> </span>
-    <span class="grey" value='<-' id="backspace">&lt;-</span>
-    <span class="operator operationButton" data-value='/'>÷</span>
+    <span class="grey" data-type="fn" data-value="backspace">&lt;-</span>
+    <span class="operator operationButton" data-type="operator" data-value='/'>÷</span>
   
-    <span class="numberButton" data-value="7">7</span>
-    <span class="numberButton" data-value="8">8</span>
-    <span class="numberButton" data-value="9">9</span>
-    <span class="operator operationButton" data-value='*'>x</span>
+    <span class="numberButton" data-type="digit" data-value="7">7</span>
+    <span class="numberButton" data-type="digit" data-value="8">8</span>
+    <span class="numberButton" data-type="digit" data-value="9">9</span>
+    <span class="operator operationButton" data-type="operator" data-value='*'>x</span>
     
-    <span class="numberButton" data-value="4">4</span>
-    <span class="numberButton" data-value="5">5</span>
-    <span class="numberButton" data-value="6">6</span>
-    <span class="operator operationButton" data-value='-'>-</span>
+    <span class="numberButton" data-type="digit" data-value="4">4</span>
+    <span class="numberButton" data-type="digit" data-value="5">5</span>
+    <span class="numberButton" data-type="digit" data-value="6">6</span>
+    <span class="operator operationButton" data-type="operator" data-value='-'>-</span>
     
-    <span class="numberButton" data-value="1">1</span>
-    <span class="numberButton" data-value="2">2</span>
-    <span class="numberButton" data-value="3">3</span>
-    <span class="operator operationButton" data-value='+'>+</span>
+    <span class="numberButton" data-type="digit" data-value="1">1</span>
+    <span class="numberButton" data-type="digit" data-value="2">2</span>
+    <span class="numberButton" data-type="digit" data-value="3">3</span>
+    <span class="operator operationButton" data-type="operator" data-value='+'>+</span>
     
-    <span class="double" data-value="0" id="zero">0</span>
-    <span id="decimal" data-value='.'>.</span>
-    <span class="operator" id="equals">=</span>
+    <span class="double" data-type="digit" data-value="0">0</span>
+    <span id="decimal" data-type="decimal" data-value='.'>.</span>
+    <span class="operator" data-type="fn" data-value="equals">=</span>
     
   </div>
 </body>

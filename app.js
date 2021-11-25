@@ -1,95 +1,163 @@
-const operationButtons = document.getElementsByClassName('operationButton');
-const numberButtons = document.getElementsByClassName('numberButton');
-const decimal = document.getElementById('decimal');
-const equals = document.getElementById('equals');
-const backspace = document.getElementById('backspace');
-const clear = document.getElementById('clear');
-const zero = document.getElementById('zero');
-
+const calculator = document.getElementById('calculator');
 const firstNum = document.getElementById('firstNum');
 const operation = document.getElementById('operation');
 const secondNum = document.getElementById('secondNum');
 
-function operate(operation, n1, n2) {
-  const operations = {
-    "+": (a, b) => a+b,
-    "-": (a, b) => a-b,
-    "*": (a, b) => a*b,
-    "/": (a, b) => a/b
-  };
+const operations = {
+  "+": (a, b) => a + b,
+  "-": (a, b) => a - b,
+  "*": (a, b) => a * b,
+  "/": (a, b) => a / b,
+};
+
+const operate = (operation, n1, n2) => {
   return operations[operation](parseFloat(n1), parseFloat(n2));
-}
+};
 
-function whereToPlaceNumber() {
-  if (operation.childNodes.length === 0) {
-    return firstNum;
-  }
-  return secondNum;
-}
 
-for (const button of numberButtons) {
-  button.addEventListener('click', () => {
-    elementToFill = whereToPlaceNumber();
-    if (elementToFill.textContent === '0') {
-      elementToFill.textContent = button.dataset.value;
-    } else {
-      whereToPlaceNumber().textContent += button.dataset.value;
-    }
-  })
-}
+// The entire mutable state of the application is located here.
+// We change it using a pure reducer, and render the state to DOM.
+// There has been a simple modification of the state here: instead of expressing
+// the state as firstNumber/secondNumber, the state is expressed in terms of
+// stack machine with the depth of one. This way, `value` state key is always
+// the current element, which makes it easier to manipulate.
+let state = {
+  value: '',
+  operation: '',
+  stack: '',
+};
+const dispatch = (event) => {
+  state = reduce(state, event);
+  render(state);
+};
+render(state);
 
-for (const button of operationButtons) {
-  button.addEventListener('click', () => {
-    if (firstNum.childNodes.length === 0) return;
-
-    if (secondNum.childNodes.length != 0) {
-      firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
-      secondNum.textContent = '';
-    }
-    operation.textContent = button.dataset.value;
-  });
-}
-
-decimal.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber();
-  if (!elementToFill.textContent.includes('.')) {
-    if (elementToFill.childNodes.length === 0) {
-      elementToFill.textContent = '0.';
-    } else {
-      elementToFill.textContent += decimal.dataset.value;
-    }
-  }
-});
-
-zero.addEventListener('click', () => {
-  elementToFill = whereToPlaceNumber();
-  if (elementToFill.textContent.length === 0 || elementToFill.textContent === '0') {
-    elementToFill.textContent = '0.';
+// Since we've separated the state from DOM, there's a need to update
+// the DOM according to the state.
+const render = (state) => {
+  // We render the state differently depending on presence of the operator.
+  if (state.operation) {
+    // If it's present, it means we have two values to display
+    firstNum.textContent = state.stack;
+    operation.textContent = state.operation;
+    secondNum.textContent = state.value;
   } else {
-    elementToFill.textContent += zero.dataset.value;
-  }
-});
-
-equals.addEventListener('click', () => {
-  if (secondNum.childNodes.length != 0) {
-    firstNum.textContent = operate(operation.textContent, firstNum.textContent, secondNum.textContent);
-    operation.textContent = '';
+    // ...and if not, only one.
+    firstNum.textContent = state.value;
+    operation.textContent = state.operation
     secondNum.textContent = '';
   }
-});
+};
 
-backspace.addEventListener('click', () => {
-  if (secondNum.childNodes.length != 0) {
-    secondNum.textContent = secondNum.textContent.slice(0, -1);
-  } else if (operation.childNodes.length != 0) {
-    operation.textContent = '';
-  } else {
-    firstNum.textContent = firstNum.textContent.slice(0, -1);
+calculator.addEventListener('click', (event) => {
+  const target = event.target;
+  const { type, value } = target.dataset;
+  if (!type || !value) {
+    return;
   }
-});
+  // We transform a DOM event to our custom "action", which has a form
+  // { type: 'string', value: 'string' }
+  dispatch({ type, value });
+}, true);
 
-clear.addEventListener('click', () => {
-  firstNum.textContent = '';
-  operation.textContent = '';
-  secondNum.textContent = '';
-});
+const appendDigit = (prefix, digit) => {
+  if (prefix === '0') {
+    return digit;
+  } else {
+    return prefix + digit;
+  }
+};
+
+const appendDecimal = (value) => {
+  if (!value.includes('.')) {
+    if (value.length === 0) {
+      return '0.';
+    } else {
+      return value + '.';
+    }
+  }
+
+  return value;
+};
+
+const pushOperator = (state, operation) => {
+  let { stack, value } = state;
+  if (value.length === 0 && stack.length === 0) {
+    return state;
+  }
+
+  if (value.length > 0 && stack.length > 0) {
+    value = String(operate(state.operation, stack, value));
+    stack = '';
+  }
+
+  return {
+    stack: value || stack,
+    value: '',
+    operation,
+  };
+};
+
+const reduce = (state, { type, value }) => {
+  switch (type) {
+    case 'digit':
+      return {
+        ...state,
+        value: appendDigit(state.value, value),
+      };
+
+    case 'operator':
+      return pushOperator(state, value);
+
+    case 'decimal':
+      return {
+        ...state,
+        value: appendDecimal(state.value),
+      };
+
+    case 'fn':
+      return reduceFnKey(state, value)
+
+    default:
+      return state;
+  }
+};
+
+const reduceFnKey = (state, fn) => {
+  switch (fn) {
+    case 'equals':
+      if (state.value.length === 0 || state.stack.length === 0) {
+        return state;
+      }
+
+      return {
+        value: String(operate(state.operation, state.stack, state.value)),
+        stack: '',
+        operation: '',
+      };
+
+    case 'backspace':
+      if (state.value.length > 0) {
+        return {
+          ...state,
+          value: state.value.slice(0, -1),
+        };
+      } else if (state.operation.length > 0) {
+        return {
+          operation: '',
+          value: state.stack,
+          stack: '',
+        };
+      }
+
+    case 'clear':
+      return {
+        value: '',
+        operation: '',
+        stack: '',
+      };
+
+    default:
+      return state;
+  }
+};
