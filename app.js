@@ -10,21 +10,27 @@ const operations = {
   "/": (a, b) => a / b,
 };
 
-function operate(operation, n1, n2) {
+const operate = (operation, n1, n2) => {
   return operations[operation](parseFloat(n1), parseFloat(n2));
 }
 
 let state = {
-  "firstNum": '',
-  "operation": '',
-  "secondNum": '',
+  value: '',
+  operation: '',
+  stack: '',
 };
 
-function render() {
-  firstNum.textContent = state.firstNum;
-  operation.textContent = state.operation;
-  secondNum.textContent = state.secondNum;
-}
+const render = () => {
+  if (state.operation) {
+    firstNum.textContent = state.stack;
+    operation.textContent = state.operation;
+    secondNum.textContent = state.value;
+  } else {
+    firstNum.textContent = state.value;
+    operation.textContent = state.operation
+    secondNum.textContent = '';
+  }
+};
 render();
 
 calculator.addEventListener('click', (event) => {
@@ -36,92 +42,109 @@ calculator.addEventListener('click', (event) => {
   dispatch({ type, value });
 }, true);
 
-function dispatch(event) {
+const dispatch = (event) => {
   state = reduce(state, event);
   render();
-}
+};
 
-function whereToPlaceNumber() {
-  if (state.operation.length === 0) {
-    return 'firstNum';
+const appendDigit = (prefix, digit) => {
+  if (prefix === '0') {
+    return digit;
+  } else {
+    return prefix + digit;
   }
-  return 'secondNum';
-}
+};
 
-function dispatch({ type, value }) {
-  switch (type) {
-    case 'digit': {
-      const activeElement = whereToPlaceNumber();
-      if (state[activeElement] === '0') {
-        state[activeElement] = value;
-      } else {
-        state[activeElement] += value;
-      }
-      break;
+const appendDecimal = (value) => {
+  if (!value.includes('.')) {
+    if (value.length === 0) {
+      return '0.';
+    } else {
+      return value + '.';
     }
+  }
+
+  return value;
+};
+
+const pushOperator = (state, operation) => {
+  let { stack, value } = state;
+  if (value.length === 0 && stack.length === 0) {
+    return state;
+  }
+
+  if (value.length > 0 && stack.length > 0) {
+    value = String(operate(state.operation, stack, value));
+    stack = '';
+  }
+
+  return {
+    stack: value || stack,
+    value: '',
+    operation,
+  };
+};
+
+const reduce = (state, { type, value }) => {
+  switch (type) {
+    case 'digit':
+      return {
+        ...state,
+        value: appendDigit(state.value, value),
+      };
 
     case 'operator':
-      if (state.firstNum.length === 0) {
-        return;
-      }
-      if (state.secondNum.length != 0) {
-        state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
-        state.secondNum = '';
-      }
-      state.operation = value;
-      break;
+      return pushOperator(state, value);
 
-    case 'decimal': {
-      const activeElement = whereToPlaceNumber();
-      if (!state[activeElement].includes('.')) {
-        if (state[activeElement].length === 0) {
-          state[activeElement] = '0.';
-        } else {
-          state[activeElement] += value;
-        }
-      }
-      break;
-    }
-
-    case 'zero': {
-      const activeElement = whereToPlaceNumber();
-      if (state[activeElement].length === 0 || state[activeElement] === '0') {
-        state[activeElement] = '0.';
-      } else {
-        state[activeElement] += value;
-      }
-      break;
-    }
+    case 'decimal':
+      return {
+        ...state,
+        value: appendDecimal(state.value),
+      };
 
     case 'fn':
-      switch (value) {
-        case 'equals':
-          if (state.secondNum.length > 0) {
-            state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
-            state.operation = '';
-            state.secondNum = '';
-          }
-          break;
+      return reduceFnKey(state, value)
 
-        case 'backspace':
-          if (state.secondNum.length > 0) {
-            state.secondNum = state.secondNum.slice(0, -1);
-          } else if (state.operation.length != 0) {
-            state.operation = '';
-          } else {
-            state.firstNum = state.firstNum.slice(0, -1);
-          }
-          break;
-
-        case 'clear':
-          state = {
-            "firstNum": '',
-            "operation": '',
-            "secondNum": '',
-          };
-        break;
-      }
-      break;
+    default:
+      return state;
   }
-  return state;
-}
+};
+
+const reduceFnKey = (state, fn) => {
+  switch (fn) {
+    case 'equals':
+      if (state.value.length === 0 || state.stack.length === 0) {
+        return state;
+      }
+
+      return {
+        value: String(operate(state.operation, state.stack, state.value)),
+        stack: '',
+        operation: '',
+      };
+
+    case 'backspace':
+      if (state.value.length > 0) {
+        return {
+          ...state,
+          value: state.value.slice(0, -1),
+        };
+      } else if (state.operation.length > 0) {
+        return {
+          operation: '',
+          value: state.stack,
+          stack: '',
+        };
+      }
+
+    case 'clear':
+      return {
+        value: '',
+        operation: '',
+        stack: '',
+      };
+
+    default:
+      return state;
+  }
+};
