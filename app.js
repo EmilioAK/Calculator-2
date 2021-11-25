@@ -36,6 +36,11 @@ calculator.addEventListener('click', (event) => {
   dispatch({ type, value });
 }, true);
 
+function dispatch(event) {
+  state = reduce(state, event);
+  render();
+}
+
 function whereToPlaceNumber() {
   if (state.operation.length === 0) {
     return 'firstNum';
@@ -118,5 +123,5 @@ function dispatch({ type, value }) {
       }
       break;
   }
-  render();
+  return state;
 }
