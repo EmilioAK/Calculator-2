@@ -1,11 +1,4 @@
-const operationButtons = document.getElementsByClassName('operationButton');
-const numberButtons = document.getElementsByClassName('numberButton');
-const decimal = document.getElementById('decimal');
-const equals = document.getElementById('equals');
-const backspace = document.getElementById('backspace');
-const clear = document.getElementById('clear');
-const zero = document.getElementById('zero');
-
+const calculator = document.getElementById('calculator');
 const firstNum = document.getElementById('firstNum');
 const operation = document.getElementById('operation');
 const secondNum = document.getElementById('secondNum');
@@ -34,6 +27,15 @@ function render() {
 }
 render();
 
+calculator.addEventListener('click', (event) => {
+  const target = event.target;
+  const { type, value } = target.dataset;
+  if (!type || !value) {
+    return;
+  }
+  dispatch({ type, value });
+}, true);
+
 function whereToPlaceNumber() {
   if (state.operation.length === 0) {
     return 'firstNum';
@@ -41,78 +43,80 @@ function whereToPlaceNumber() {
   return 'secondNum';
 }
 
-for (const button of numberButtons) {
-  button.addEventListener('click', () => {
-    const activeElement = whereToPlaceNumber();
-    if (state[activeElement] === '0') {
-      state[activeElement] = button.dataset.value;
-    } else {
-      state[activeElement] += button.dataset.value;
+function dispatch({ type, value }) {
+  switch (type) {
+    case 'digit': {
+      const activeElement = whereToPlaceNumber();
+      if (state[activeElement] === '0') {
+        state[activeElement] = value;
+      } else {
+        state[activeElement] += value;
+      }
+      break;
     }
-    render();
-  });
+
+    case 'operator':
+      if (state.firstNum.length === 0) {
+        return;
+      }
+      if (state.secondNum.length != 0) {
+        state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
+        state.secondNum = '';
+      }
+      state.operation = value;
+      break;
+
+    case 'decimal': {
+      const activeElement = whereToPlaceNumber();
+      if (!state[activeElement].includes('.')) {
+        if (state[activeElement].length === 0) {
+          state[activeElement] = '0.';
+        } else {
+          state[activeElement] += value;
+        }
+      }
+      break;
+    }
+
+    case 'zero': {
+      const activeElement = whereToPlaceNumber();
+      if (state[activeElement].length === 0 || state[activeElement] === '0') {
+        state[activeElement] = '0.';
+      } else {
+        state[activeElement] += value;
+      }
+      break;
+    }
+
+    case 'fn':
+      switch (value) {
+        case 'equals':
+          if (state.secondNum.length > 0) {
+            state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
+            state.operation = '';
+            state.secondNum = '';
+          }
+          break;
+
+        case 'backspace':
+          if (state.secondNum.length > 0) {
+            state.secondNum = state.secondNum.slice(0, -1);
+          } else if (state.operation.length != 0) {
+            state.operation = '';
+          } else {
+            state.firstNum = state.firstNum.slice(0, -1);
+          }
+          break;
+
+        case 'clear':
+          state = {
+            "firstNum": '',
+            "operation": '',
+            "secondNum": '',
+          };
+        break;
+      }
+      break;
+  }
+  render();
 }
-
-for (const button of operationButtons) {
-  button.addEventListener('click', () => {
-    if (state.firstNum.length === 0) return;
-
-    if (state.secondNum.length != 0) {
-      state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
-      state.secondNum = '';
-    }
-    state.operation = button.dataset.value;
-    render();
-  });
-}
-
-decimal.addEventListener('click', () => {
-  const activeElement = whereToPlaceNumber();
-  if (!state[activeElement].includes('.')) {
-    if (state[activeElement].length === 0) {
-      state[activeElement] = '0.';
-    } else {
-      state[activeElement] += decimal.dataset.value;
-    }
-    render();
-  }
-});
-
-zero.addEventListener('click', () => {
-  const activeElement = whereToPlaceNumber();
-  if (state[activeElement].length === 0 || state[activeElement] === '0') {
-    state[activeElement] = '0.';
-  } else {
-    state[activeElement] += zero.dataset.value;
-  }
-  render();
-});
-
-equals.addEventListener('click', () => {
-  if (state.secondNum.length > 0) {
-    state.firstNum = operate(state.operation, state.firstNum, state.secondNum);
-    state.operation = '';
-    state.secondNum = '';
-  }
-  render();
-});
-
-backspace.addEventListener('click', () => {
-  if (state.secondNum.length > 0) {
-    state.secondNum = state.secondNum.slice(0, -1);
-  } else if (state.operation.length != 0) {
-    state.operation = '';
-  } else {
-    state.firstNum = state.firstNum.slice(0, -1);
-  }
-  render();
-});
-
-clear.addEventListener('click', () => {
-  state = {
-    "firstNum": '',
-    "operation": '',
-    "secondNum": '',
-  };
-  render();
-});
